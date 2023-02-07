@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface UserEntityRepository extends JpaRepository<UserEntity, Long> {
-	boolean existsUserByNickName(@Param("nickName") String nickName);
+	boolean existsUserByNickNameOrEmail(@Param("nickName") String nickName, @Param("email") String email);
 }

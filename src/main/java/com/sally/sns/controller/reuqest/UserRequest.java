@@ -9,6 +9,7 @@ public class UserRequest {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class Join {
+		private String email;
 		private String nickname;
 		private String password;
 	}

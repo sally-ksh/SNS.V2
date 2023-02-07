@@ -29,14 +29,15 @@ class UserServiceTest {
 	// private JwtConfiguration jwtConfiguration;
 
 	private final String nickName = "nickName";
+	private String email = "tester@email.com";
 	private final String password = "password1234";
 
 	@Test
 	void 사용자_등록이_정상_동작한다() {
-		when(userEntityRepository.existsUserByNickName(nickName)).thenReturn(false);
+		when(userEntityRepository.existsUserByNickNameOrEmail(nickName, email)).thenReturn(false);
 		when(passwordEncoder.encode(password)).thenReturn("encodedPassword");
 
-		userService.create(new UserRequest.Join(nickName, password));
+		userService.create(new UserRequest.Join(email, nickName, password));
 
 		verify(userEntityRepository, times(1)).save(any(UserEntity.class));
 		assertThatNoException();

@@ -3,6 +3,7 @@ package com.sally.sns.service;
 import com.sally.sns.controller.reuqest.UserRequest;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
+import com.sally.sns.model.User;
 import com.sally.sns.model.entity.UserEntity;
 import com.sally.sns.repository.UserEntityRepository;
 
@@ -19,17 +20,20 @@ public class UserService {
 	private final BCryptPasswordEncoder passwordEncoder;
 
 	@Transactional
-	public void create(UserRequest.Join request) {
+	public User create(UserRequest.Join request) {
 		isUniqueNickname(request);
-		userEntityRepository.save(
+		UserEntity userEntity = userEntityRepository.save(
 			UserEntity.of(
 				request.getNickname(),
+				request.getEmail(),
 				passwordEncoder.encode(request.getPassword())
 			));
+		return User.fromEntity(userEntity);
 	}
 
 	private void isUniqueNickname(UserRequest.Join userJoinRequest) {
-		if (userEntityRepository.existsUserByNickName(userJoinRequest.getNickname())) {
+		if (userEntityRepository.existsUserByNickNameOrEmail(userJoinRequest.getNickname(),
+			userJoinRequest.getEmail())) {
 			throw new SnsApplicationException(
 				ErrorCode.DUPLICATED_USER_NAME,
 				String.format("%s is duplicated", userJoinRequest.getNickname()));

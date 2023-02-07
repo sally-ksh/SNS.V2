@@ -26,26 +26,29 @@ import lombok.NoArgsConstructor;
 @Entity
 public class UserEntity extends BaseEntity {
 	private String nickName;
+	private String email;
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private UserRole role = UserRole.USER;
 
 	@Builder(access = PRIVATE)
-	public UserEntity(
-		Integer id,
-		LocalDateTime createdAt,
-		LocalDateTime modifiedAt,
-		boolean deleted,
-		String nickName,
-		String password,
-		UserRole role) {
+	public UserEntity(Integer id, LocalDateTime createdAt, LocalDateTime modifiedAt, boolean deleted,
+		String nickName, String email, String password, UserRole role) {
 		super(id, createdAt, modifiedAt, deleted);
 		this.nickName = nickName;
+		this.email = email;
 		this.password = password;
 		this.role = role;
 	}
 
-	public static UserEntity of(String nickName, String password) {
+	public UserEntity(String nickName, String email, String password, UserRole role) {
+		this.nickName = nickName;
+		this.email = email;
+		this.password = password;
+		this.role = role;
+	}
+
+	public static UserEntity of(String nickName, String email, String password) {
 		return UserEntity.builder()
 			.nickName(nickName)
 			.password(password)

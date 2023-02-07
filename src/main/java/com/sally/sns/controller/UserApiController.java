@@ -2,6 +2,7 @@ package com.sally.sns.controller;
 
 import com.sally.sns.controller.response.Response;
 import com.sally.sns.controller.reuqest.UserRequest;
+import com.sally.sns.model.User;
 import com.sally.sns.service.UserService;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ public class UserApiController {
 
 	@PostMapping("/join")
 	public Response join(@RequestBody UserRequest.Join userJoinRequest) {
-		userService.create(userJoinRequest);
-		return Response.success();
+		User user = userService.create(userJoinRequest);
+		return Response.success(user);
 	}
 }
