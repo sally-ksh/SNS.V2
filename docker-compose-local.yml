@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  sns-app-redis:
+    container_name: sns-app-redis
+    build:
+      dockerfile: Dockerfile
+      context: ./redis
+    image: sns-app-redis
+    ports:
+      - "6379:6379"
+  sns-app-database:
+    container_name: sns-app-database
+    build:
+      dockerfile: Dockerfile
+      context: ./database
+    image: sns-app-database
+    environment:
+      - MYSQL_DATABASE=road-app
+      - MYSQL_ROOT_PASSWORD=${SPRING_DATASOURCE_ROOT_PASSWORD}
+      - MYSQL_USER=${SPRING_DATASOURCE_USERNAME}
+      - MYSQL_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - ./database/config:/etc/mysql/conf.d
+    ports:
+      - "3306:3306"
+
