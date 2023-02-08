@@ -13,4 +13,12 @@ public class UserRequest {
 		private String nickname;
 		private String password;
 	}
+
+	@Getter
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class Login {
+		private String nickname;
+		private String password;
+	}
 }
