@@ -16,7 +16,7 @@ public class AuthenticationConfiguration {
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		return httpSecurity.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/api/*/users/join").permitAll()
+			.antMatchers("/api/*/users/join", "/api/*/users/login").permitAll()
 			.antMatchers("/api/**").authenticated()
 			.and()
 			.build();
