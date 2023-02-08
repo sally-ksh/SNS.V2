@@ -23,4 +23,10 @@ public class UserApiController {
 		User user = userService.create(userJoinRequest);
 		return Response.success(user);
 	}
+
+	@PostMapping("/login")
+	public Response login(@RequestBody UserRequest.Login userLoginRequest) {
+		String token = userService.login(userLoginRequest);
+		return Response.success(token);
+	}
 }
