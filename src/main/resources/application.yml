@@ -29,7 +29,11 @@ spring:
     port: 6379
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update #create
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  # 30일 = 2592000 * 1000(ms)
+  expired-time-ms: ${JWT_EXPIRED_TIME_MS}
