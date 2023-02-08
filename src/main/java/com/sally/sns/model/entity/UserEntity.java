@@ -41,16 +41,10 @@ public class UserEntity extends BaseEntity {
 		this.role = role;
 	}
 
-	public UserEntity(String nickName, String email, String password, UserRole role) {
-		this.nickName = nickName;
-		this.email = email;
-		this.password = password;
-		this.role = role;
-	}
-
 	public static UserEntity of(String nickName, String email, String password) {
 		return UserEntity.builder()
 			.nickName(nickName)
+			.email(email)
 			.password(password)
 			.role(UserRole.USER)
 			.build();
