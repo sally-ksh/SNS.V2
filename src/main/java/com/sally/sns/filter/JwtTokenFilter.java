@@ -41,6 +41,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		if (ObjectUtils.isEmpty(header) || !header.startsWith("Bearer ")) {
 			log.error("Error of header, The header is null or invalid : {}", request.getRequestURL());
 			filterChain.doFilter(request, response);
+			return;
 		}
 
 		try {
