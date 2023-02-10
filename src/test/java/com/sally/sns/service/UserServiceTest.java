@@ -12,6 +12,7 @@ import com.sally.sns.configuration.JwtConfiguration;
 import com.sally.sns.controller.reuqest.UserRequest;
 import com.sally.sns.exception.SnsApplicationException;
 import com.sally.sns.model.entity.UserEntity;
+import com.sally.sns.repository.UserCacheRepository;
 import com.sally.sns.repository.UserEntityRepository;
 import com.sally.sns.testEntity.TestUserEntity;
 
@@ -36,6 +37,8 @@ class UserServiceTest {
 	private BCryptPasswordEncoder passwordEncoder;
 	@Mock
 	private JwtConfiguration jwtConfiguration;
+	@Mock
+	private UserCacheRepository userCacheRepository;
 
 	private final String nickName = "nickName";
 	private String email = "tester@email.com";
@@ -53,6 +56,7 @@ class UserServiceTest {
 	void create_saveUser_ok() {
 		when(userEntityRepository.existsUserByNickNameOrEmail(nickName, email)).thenReturn(false);
 		when(passwordEncoder.encode(password)).thenReturn("encodedPassword");
+		when(userEntityRepository.save(any())).thenReturn(testUserEntity.toEntity());
 
 		userService.create(new UserRequest.Join(email, nickName, password));
 
@@ -77,6 +81,7 @@ class UserServiceTest {
 		long jwtExpiredTime = 30 * 24 * 60 * 60 * 1000L;
 		UserEntity userEntity = testUserEntity.toEntity();
 
+		when(userCacheRepository.user(nickName)).thenReturn(Optional.empty());
 		when(userEntityRepository.findByNickName(nickName)).thenReturn(Optional.of(userEntity));
 		// when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
 		when(userEntity.isMatchUpPassword(passwordEncoder, password)).thenReturn(true);
