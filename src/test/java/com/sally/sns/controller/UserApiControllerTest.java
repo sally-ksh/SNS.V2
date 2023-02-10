@@ -33,7 +33,6 @@ class UserApiControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	// @Autowired
 	@MockBean
 	private UserService userService;
 
@@ -89,8 +88,7 @@ class UserApiControllerTest {
 	@WithAnonymousUser
 	@DisplayName("로그인시 가입 안 된 닉네임은 에러 처리한다.")
 	void login_noneOfNickname_error() throws Exception {
-		when(userService.login(new UserRequest.Login(nickName, password)))
-			.thenThrow(new SnsApplicationException(ErrorCode.USER_NOT_FOUNDED, ""));
+		doThrow(new SnsApplicationException(ErrorCode.USER_NOT_FOUNDED, "")).when(userService).login(any());
 
 		mockMvc.perform(post("/api/v2/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -104,14 +102,13 @@ class UserApiControllerTest {
 	@DisplayName("로그인시 요청 비밀번호가 다르면 에러 처리한다.")
 	void login_differentPassword_error() throws Exception {
 		String wrongPassword = "wrongPwd1234";
-		when(userService.login(getLoginRequest(password)))
-			.thenThrow(new SnsApplicationException(ErrorCode.INVALID_PASSWORD, ""));
+		doThrow(new SnsApplicationException(ErrorCode.INVALID_PASSWORD, "")).when(userService).login(any());
 
 		mockMvc.perform(post("/api/v2/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(contentMapper(getLoginRequest(wrongPassword)))
 			).andDo(print())
-			.andExpect(status().isNotFound());
+			.andExpect(status().isUnauthorized());
 	}
 
 	private String contentMapper(Object request) throws JsonProcessingException {
