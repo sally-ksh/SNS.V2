@@ -50,19 +50,27 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				filterChain.doFilter(request, response);
 				return;
 			}
-			String nickName = JwtTokenUtils.getUserName(token, jwtConfiguration.getSecretKey());
-			User user = userService.loadUserByUserName(nickName);
-			// check user valid
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-				user, null, List.of(new SimpleGrantedAuthority(user.getRole()))
-			);
-			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+			
+			User user = getValidUserFrom(token);
+			toSecurityContext(request, user);
 		} catch (RuntimeException exception) {
 			log.error("Error of accessor validation. {}", exception.getStackTrace());
 			filterChain.doFilter(request, response);
 			return;
 		}
 		filterChain.doFilter(request, response);
+	}
+
+	private User getValidUserFrom(String token) {
+		String nickName = JwtTokenUtils.getUserName(token, jwtConfiguration.getSecretKey());
+		return userService.loadUserByUserName(nickName);
+	}
+
+	private void toSecurityContext(HttpServletRequest request, User user) {
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+			user, null, List.of(new SimpleGrantedAuthority(user.getRole()))
+		);
+		authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 	}
 }
