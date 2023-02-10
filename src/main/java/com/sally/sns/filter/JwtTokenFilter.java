@@ -8,7 +8,6 @@ import com.sally.sns.util.JwtTokenUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.ObjectUtils;
@@ -58,8 +57,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				user, null, List.of(new SimpleGrantedAuthority(user.getRole()))
 			);
 			authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-			SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-			securityContext.setAuthentication(authenticationToken);
+			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 		} catch (RuntimeException exception) {
 			log.error("Error of accessor validation. {}", exception.getStackTrace());
 			filterChain.doFilter(request, response);

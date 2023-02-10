@@ -32,7 +32,7 @@ public class UserEntity extends BaseEntity {
 	private UserRole role = UserRole.USER;
 
 	@Builder(access = PRIVATE)
-	public UserEntity(Integer id, LocalDateTime createdAt, LocalDateTime modifiedAt, boolean deleted,
+	public UserEntity(Long id, LocalDateTime createdAt, LocalDateTime modifiedAt, boolean deleted,
 		String nickName, String email, String password, UserRole role) {
 		super(id, createdAt, modifiedAt, deleted);
 		this.nickName = nickName;

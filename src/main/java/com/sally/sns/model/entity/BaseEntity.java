@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 public class BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 
 	@CreatedDate
 	@Column(updatable = false, nullable = false)
