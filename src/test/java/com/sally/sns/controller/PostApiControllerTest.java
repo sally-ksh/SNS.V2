@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.service.PostService;
-import com.sally.sns.testEntity.TestPosrEntity;
+import com.sally.sns.testEntity.TestPostEntity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,18 +38,18 @@ class PostApiControllerTest {
 	@MockBean
 	private PostService postService;
 
-	private TestPosrEntity testPosrEntity;
+	private TestPostEntity testPostEntity;
 
 	@BeforeEach
 	void beforeEach() {
-		testPosrEntity = TestPosrEntity.of(TITLE, CONTENT);
+		testPostEntity = TestPostEntity.of(TITLE, CONTENT);
 	}
 
 	@WithMockUser
 	@Test
 	@DisplayName("포스트 등록이 정상 동작 한다.")
 	void create_post_ok() throws Exception {
-		when(postService.create(any(), anyString())).thenReturn(testPosrEntity.getPostDto());
+		when(postService.create(any(), anyString())).thenReturn(testPostEntity.getPostDto());
 
 		mockMvc.perform(post("/api/v2/posts")
 				.with(csrf())
