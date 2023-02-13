@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.service.PostService;
 import com.sally.sns.testEntity.TestPostEntity;
+import com.sally.sns.testutil.TestMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,7 +55,7 @@ class PostApiControllerTest {
 		mockMvc.perform(post("/api/v2/posts")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(getPostCreationRequest())))
+				.content(TestMapper.content(getPostCreationRequest())))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}

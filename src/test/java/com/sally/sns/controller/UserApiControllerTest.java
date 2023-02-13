@@ -15,6 +15,7 @@ import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
 import com.sally.sns.model.User;
 import com.sally.sns.service.UserService;
+import com.sally.sns.testutil.TestMapper;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class UserApiControllerTest {
 
 		mockMvc.perform(post("/api/v2/users/join")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(contentMapper(getJoinRequest()))
+				.content(TestMapper.content(getJoinRequest()))
 			).andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -65,7 +66,7 @@ class UserApiControllerTest {
 
 		mockMvc.perform(post("/api/v2/users/join")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(contentMapper(getJoinRequest()))
+				.content(TestMapper.content(getJoinRequest()))
 			).andDo(print())
 			.andExpect(status().isConflict());
 		// .andExpect(status().is4xxClientError());
@@ -79,7 +80,7 @@ class UserApiControllerTest {
 
 		mockMvc.perform(post("/api/v2/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(contentMapper(getLoginRequest(password)))
+				.content(TestMapper.content(getLoginRequest(password)))
 			).andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -92,7 +93,7 @@ class UserApiControllerTest {
 
 		mockMvc.perform(post("/api/v2/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(contentMapper(getLoginRequest(password)))
+				.content(TestMapper.content(getLoginRequest(password)))
 			).andDo(print())
 			.andExpect(status().isNotFound());
 	}
@@ -106,12 +107,12 @@ class UserApiControllerTest {
 
 		mockMvc.perform(post("/api/v2/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(contentMapper(getLoginRequest(wrongPassword)))
+				.content(TestMapper.content(getLoginRequest(wrongPassword)))
 			).andDo(print())
 			.andExpect(status().isUnauthorized());
 	}
 
-	private String contentMapper(Object request) throws JsonProcessingException {
+	public String contentMapper(Object request) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(request);
 	}
 
