@@ -6,7 +6,7 @@ import com.sally.sns.model.entity.UserEntity;
 import java.time.LocalDateTime;
 
 public class TestUserEntity {
-	private static final Long USER_ENTITY_ID = 1l;
+	public static final Long USER_ENTITY_ID = 1l;
 	private UserEntity userEntity;
 
 	public static TestUserEntity of(String nickname, String password) {
