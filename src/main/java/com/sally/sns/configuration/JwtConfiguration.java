@@ -11,8 +11,8 @@ import lombok.ToString;
 @ConfigurationProperties(prefix = "jwt")
 @ConstructorBinding
 public class JwtConfiguration {
-	private String secretKey;
-	private String expiredTimeMs;
+	private final String secretKey;
+	private final String expiredTimeMs;
 
 	public String getSecretKey() {
 		return secretKey;
