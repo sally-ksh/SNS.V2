@@ -344,3 +344,4 @@ gradle-app.setting
 
 ### personal
 .env
+application-test.yml
