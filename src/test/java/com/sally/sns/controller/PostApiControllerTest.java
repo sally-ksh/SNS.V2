@@ -2,7 +2,7 @@ package com.sally.sns.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -10,8 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sally.sns.controller.reuqest.PostRequest;
+import com.sally.sns.exception.ErrorCode;
+import com.sally.sns.exception.SnsApplicationException;
+import com.sally.sns.fixture.entity.TestPostEntity;
+import com.sally.sns.fixture.request.PostRequestFactory;
 import com.sally.sns.service.PostService;
-import com.sally.sns.testEntity.TestPostEntity;
 import com.sally.sns.testutil.TestMapper;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -50,9 +53,7 @@ class PostApiControllerTest {
 	@Test
 	@DisplayName("포스트 등록이 정상 동작 한다.")
 	void create_post_ok() throws Exception {
-		when(postService.create(any(), anyString())).thenReturn(testPostEntity.getPostDto());
-
-		mockMvc.perform(post("/api/v2/posts")
+		mockMvc.perform(post("/api/v2/sns/posts")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(TestMapper.content(getPostCreationRequest())))
@@ -62,19 +63,21 @@ class PostApiControllerTest {
 
 	@WithAnonymousUser
 	@Test
-	@DisplayName("포스트 등록시 로그인한 사용자 요청은 에러 발생 한다.")
-	void create_invalidAuthor_error() {
+	@DisplayName("포스트 등록시 비로그인 사용자 요청은 에러 발생 한다.")
+	void create_invalidUser_error() throws Exception {
+		doThrow(new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION))
+			.when(postService).create(any(), anyString());
 
-	}
-
-	@Test
-	@DisplayName("포스트 등록시 작성자와 접근자가 일치하지 않으면 에러 발생 한다.")
-	void create_postAuthorDifferentFromAccessor_error() {
-
+		mockMvc.perform(post("/api/v2/sns/posts")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(TestMapper.content(getPostCreationRequest())))
+			.andDo(print())
+			.andExpect(status().isUnauthorized());
 	}
 
 	private PostRequest.Creation getPostCreationRequest() {
-		return new PostRequest.Creation(TITLE, CONTENT);
+		return PostRequestFactory.getPostCreationRequest(TITLE, CONTENT, PostRequestFactory.Designation.EMPTY);
 	}
 
 }
