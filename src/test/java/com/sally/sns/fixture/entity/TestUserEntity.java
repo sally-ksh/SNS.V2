@@ -1,5 +1,6 @@
-package com.sally.sns.testEntity;
+package com.sally.sns.fixture.entity;
 
+import com.sally.sns.model.Member;
 import com.sally.sns.model.UserRole;
 import com.sally.sns.model.entity.UserEntity;
 
@@ -25,5 +26,9 @@ public class TestUserEntity {
 
 	public UserEntity toEntity() {
 		return userEntity;
+	}
+
+	public static Member getMember() {
+		return new Member(TestUserEntity.USER_ENTITY_ID, "nicknameUser");
 	}
 }

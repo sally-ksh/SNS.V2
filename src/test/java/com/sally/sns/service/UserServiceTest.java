@@ -11,10 +11,10 @@ import static org.mockito.Mockito.when;
 import com.sally.sns.configuration.JwtConfiguration;
 import com.sally.sns.controller.reuqest.UserRequest;
 import com.sally.sns.exception.SnsApplicationException;
+import com.sally.sns.fixture.entity.TestUserEntity;
 import com.sally.sns.model.entity.UserEntity;
 import com.sally.sns.repository.UserCacheRepository;
 import com.sally.sns.repository.UserEntityRepository;
-import com.sally.sns.testEntity.TestUserEntity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
