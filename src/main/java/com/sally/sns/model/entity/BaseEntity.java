@@ -33,7 +33,7 @@ public class BaseEntity {
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
-	private LocalDateTime modifiedAt;
+	private LocalDateTime updatedAt;
 
 	@ColumnDefault("0")
 	private boolean deleted;
