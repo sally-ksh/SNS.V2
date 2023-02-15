@@ -54,7 +54,7 @@ class PostApiControllerTest {
 
 	@WithMockUser
 	@Test
-	@DisplayName("포스트 등록이 정상 동작 한다.")
+	@DisplayName("포스트 등록이 성공 한다.")
 	void create_post_ok() throws Exception {
 		mockMvc.perform(post("/api/v2/sns/posts")
 				.with(csrf())
@@ -81,8 +81,8 @@ class PostApiControllerTest {
 
 	@WithMockUser
 	@Test
-	@DisplayName("포스트 목록보기 요청이 정상 동작 한다.")
-	void create_postList_ok() throws Exception {
+	@DisplayName("포스트 목록보기 요청이 성공 한다.")
+	void getLists_member_ok() throws Exception {
 		when(postService.readAll(any())).thenReturn(Page.empty());
 
 		mockMvc.perform(get("/api/v2/sns/posts")
@@ -94,7 +94,7 @@ class PostApiControllerTest {
 	@WithAnonymousUser
 	@Test
 	@DisplayName("포스트 목록보기 요청시 회원이 아니면 에러발생 한다.")
-	void create_postListWithInvalidUser_error() throws Exception {
+	void getLists_withInvalidUser_error() throws Exception {
 		doThrow(new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION))
 			.when(postService).readAll(any());
 
@@ -102,6 +102,18 @@ class PostApiControllerTest {
 				.with(csrf()))
 			.andDo(print())
 			.andExpect(status().isUnauthorized());
+	}
+
+	@WithMockUser
+	@Test
+	@DisplayName("나의 포스트 목록 요청이 성공 한다.")
+	void myList_readWithMe_ok() throws Exception {
+		when(postService.readMemberPosts(any(), any())).thenReturn(Page.empty());
+
+		mockMvc.perform(get("/api/v2/sns/posts/my")
+				.with(csrf()))
+			.andDo(print())
+			.andExpect(status().isOk());
 	}
 
 	private PostRequest.Creation getPostCreationRequest() {
