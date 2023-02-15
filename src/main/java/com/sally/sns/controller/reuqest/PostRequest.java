@@ -37,4 +37,12 @@ public class PostRequest {
 			return this.y;
 		}
 	}
+
+	@Getter
+	@AllArgsConstructor
+	@NoArgsConstructor
+	public static class Modification {
+		private String title;  // TODO validate
+		private String content;
+	}
 }
