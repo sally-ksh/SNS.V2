@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class TestUserEntity {
 	public static final Long USER_ENTITY_ID = 1l;
-	private UserEntity userEntity;
+	private static UserEntity userEntity;
 
 	public static TestUserEntity of(String nickname, String password) {
 		TestUserEntity testUserEntity = new TestUserEntity();
@@ -24,7 +24,7 @@ public class TestUserEntity {
 		return testUserEntity;
 	}
 
-	public UserEntity toEntity() {
+	public static UserEntity toEntity() {
 		return userEntity;
 	}
 
