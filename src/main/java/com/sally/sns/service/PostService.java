@@ -1,6 +1,8 @@
 package com.sally.sns.service;
 
 import com.sally.sns.controller.reuqest.PostRequest;
+import com.sally.sns.exception.ErrorCode;
+import com.sally.sns.exception.SnsApplicationException;
 import com.sally.sns.model.MyPost;
 import com.sally.sns.model.Post;
 import com.sally.sns.model.User;
@@ -42,5 +44,22 @@ public class PostService {
 	public Page<MyPost> readMemberPosts(Pageable pageable, Long userId) {
 		return postEntityRepository.findAllByAuthorId(userId, pageable)
 			.map(MyPost::from);
+	}
+
+	public MyPost modify(PostRequest.Modification request, Long postId, Long userId) {
+		PostEntity postEntity = getPostEntityOrThrow(postId);
+		if (postEntity.isNotAuthor(userId)) {
+			throw new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION,
+				String.format("PostService : modify [Member: %s]", userId));
+		}
+
+		postEntity.update(request.getTitle(), request.getContent());
+		return MyPost.from(postEntity);
+	}
+
+	private PostEntity getPostEntityOrThrow(Long postId) {
+		return postEntityRepository.findWithAuthorById(postId)
+			.orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND,
+				String.format("The Post's ID : %d", postId)));
 	}
 }
