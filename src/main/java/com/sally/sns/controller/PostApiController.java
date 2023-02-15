@@ -13,7 +13,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,4 +49,10 @@ public class PostApiController {
 		return Response.success(postService.readMemberPosts(pageable, user.getId()).map(MyPostResponse::of));
 	}
 
+	@PutMapping("/{postId}")
+	public Response<MyPostResponse> modify(@PathVariable Long postId,
+		@RequestBody PostRequest.Modification request, Authentication authentication) {
+		User user = (User)authentication.getPrincipal();
+		return Response.success(MyPostResponse.of(postService.modify(request, postId, user.getId())));
+	}
 }
