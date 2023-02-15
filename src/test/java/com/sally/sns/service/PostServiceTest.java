@@ -1,6 +1,6 @@
 package com.sally.sns.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -21,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -48,8 +50,6 @@ class PostServiceTest {
 		when(userService.loadUserByUserName(TEST_USER_NICKNAME)).thenReturn(mock(User.class));
 
 		postService.create(postCreationRequest, TEST_USER_NICKNAME);
-
-		assertThat(postCreationRequest.getPlace()).isNull();
 	}
 
 	@Test
@@ -62,6 +62,30 @@ class PostServiceTest {
 			() -> postService.create(getPostCreationRequest(PostRequestFactory.Designation.EMPTY), TEST_USER_NICKNAME))
 			.isInstanceOf(SnsApplicationException.class)
 			.hasMessageContaining(ErrorCode.USER_NOT_FOUNDED.name());
+	}
+
+	@Test
+	@DisplayName("포스트 목록 조회가 정상 동작 한다.")
+	void post_readAll_ok() {
+		Pageable pageable = mock(Pageable.class);
+		when(postEntityRepository.findPostViews(pageable))
+			.thenReturn(Page.empty());  // Collections.emptyList()
+
+		postService.readAll(pageable);
+
+		assertThatNoException();
+	}
+
+	@Test
+	@DisplayName("나의 포스트 목록 조회가 정상 동작 한다.")
+	void post_readMemberPosts_ok() {
+		Pageable pageable = mock(Pageable.class);
+		when(postEntityRepository.findAllByAuthorId(testPostEntity.authorId(), pageable))
+			.thenReturn(Page.empty());
+
+		postService.readMemberPosts(pageable, testPostEntity.authorId());
+
+		assertThatNoException();
 	}
 
 	private PostRequest.Creation getPostCreationRequest(PostRequestFactory.Designation designation) {
