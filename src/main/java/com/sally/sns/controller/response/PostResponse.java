@@ -1,5 +1,6 @@
 package com.sally.sns.controller.response;
 
+import com.sally.sns.model.Member;
 import com.sally.sns.model.Post;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public class PostResponse {
 	private final Long postId;
 	private final String title;
 	private final String content;
-	private final UserResponse author;
+	private final Member author;
 	private final LocalDateTime createdAt;
 
 	public static PostResponse of(Post post) {
@@ -24,7 +25,7 @@ public class PostResponse {
 			.postId(post.getPostId())
 			.title(post.getTitle())
 			.content(post.getContent())
-			.author(UserResponse.of(post.getUser()))
+			.author(post.getAuthor())
 			.createdAt(post.getCreatedAt())
 			.build();
 	}
