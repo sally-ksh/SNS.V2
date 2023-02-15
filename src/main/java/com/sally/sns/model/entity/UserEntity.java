@@ -50,6 +50,10 @@ public class UserEntity extends BaseEntity {
 			.build();
 	}
 
+	public static UserEntity from(Long userId) {
+		return UserEntity.builder().id(userId).build();
+	}
+
 	public boolean isMatchUpPassword(BCryptPasswordEncoder passwordEncoder, String password) {
 		return passwordEncoder.matches(password, this.password);
 	}
@@ -64,5 +68,9 @@ public class UserEntity extends BaseEntity {
 
 	public boolean hasNickName(String nickName) {
 		return this.nickName.equals(nickName);
+	}
+
+	public boolean hasId(Long userId) {
+		return (getId() == userId);
 	}
 }
