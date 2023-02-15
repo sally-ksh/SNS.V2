@@ -1,5 +1,7 @@
 package com.sally.sns.fixture.entity;
 
+import static com.sally.sns.fixture.entity.TestUserEntity.USER_ENTITY_ID;
+
 import com.sally.sns.model.Location;
 import com.sally.sns.model.Post;
 import com.sally.sns.model.entity.PostEntity;
@@ -20,7 +22,7 @@ public class TestPostEntity {
 			false,
 			title,
 			content,
-			TestUserEntity.getMember(),
+			TestUserEntity.toEntity(),
 			location
 		);
 		return testPostEntity;
@@ -32,12 +34,16 @@ public class TestPostEntity {
 
 	public static TestPostEntity createEntityWithLocation(String title, String content) {
 		TestPostEntity testPostEntity = new TestPostEntity();
-		testPostEntity.postEntity = PostEntity.of(title, content, TestUserEntity.getMember(), location);
+		testPostEntity.postEntity = PostEntity.of(title, content, TestUserEntity.toEntity(), location);
 		return testPostEntity;
 	}
 
 	public PostEntity toEntity() {
 		return postEntity;
+	}
+
+	public Long authorId() {
+		return USER_ENTITY_ID;
 	}
 
 	public Post getPostDto() {
