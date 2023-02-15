@@ -10,6 +10,7 @@ import org.hibernate.annotations.Where;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -75,5 +76,14 @@ public class PostEntity extends BaseEntity {
 
 	public Location location() {
 		return this.location;
+	}
+
+	public boolean isNotAuthor(Long userId) {
+		return !this.author.hasId(userId);
+	}
+
+	public void update(String title, String content) {
+		this.title = Objects.requireNonNull(title);
+		this.content = content;
 	}
 }
