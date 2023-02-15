@@ -42,6 +42,10 @@ public class TestPostEntity {
 		return postEntity;
 	}
 
+	public Long postId() {
+		return this.postEntity.getId();
+	}
+
 	public Long authorId() {
 		return USER_ENTITY_ID;
 	}
