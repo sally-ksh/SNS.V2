@@ -54,7 +54,7 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public User loadUserByUserName(String nickName) {
 		return getUserFromCache(nickName)
-			.orElse(User.fromEntity(getUserEntityOrThrow(nickName)));
+			.orElseGet(() -> User.fromEntity(getUserEntityOrThrow(nickName)));
 	}
 
 	private void isUniqueNickname(UserRequest.Join userJoinRequest) {
@@ -83,3 +83,7 @@ public class UserService {
 		return userCacheRepository.user(nickname);
 	}
 }
+	/* User user = getUserFromCache(nickName)
+	 	.orElse(User.fromEntity(getUserEntityOrThrow(nickName)));*/
+	/* Optional<User> userOptional = getUserFromCache(nickName)
+		.or(() -> Optional.of(User.fromEntity(getUserEntityOrThrow(nickName))));*/
