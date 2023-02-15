@@ -5,9 +5,12 @@ import com.sally.sns.model.entity.PostEntity;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface PostEntityRepository extends JpaRepository<PostEntity, Long> {
 	@Query(value =
@@ -20,4 +23,7 @@ public interface PostEntityRepository extends JpaRepository<PostEntity, Long> {
 	Page<PostView> findPostViews(Pageable pageable);
 
 	Page<PostEntity> findAllByAuthorId(@Param("userId") Long userId, Pageable pageable);
+
+	@EntityGraph(attributePaths = {"author"}, type = EntityGraph.EntityGraphType.LOAD)
+	Optional<PostEntity> findWithAuthorById(@Param("postId") Long postId);
 }
