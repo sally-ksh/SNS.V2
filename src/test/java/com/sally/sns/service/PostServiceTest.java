@@ -5,15 +5,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.sally.sns.controller.reuqest.CommentRequest;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
 import com.sally.sns.fixture.entity.TestPostEntity;
 import com.sally.sns.fixture.request.PostRequestFactory;
+import com.sally.sns.model.Member;
 import com.sally.sns.model.User;
 import com.sally.sns.model.entity.PostEntity;
+import com.sally.sns.repository.CommentEntityRepository;
 import com.sally.sns.repository.PostEntityRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +38,15 @@ class PostServiceTest {
 	public static final String TEST_TITLE = "testTitle";
 	public static final String TEST_CONTENT = "testContentasdfjkl;";
 	public static final String TEST_USER_NICKNAME = "testUserNickname";
+	public static final String TEST_COMMENT = "코멘트가 담겨 있습니다.";
 	@InjectMocks
 	private PostService postService;
 	@Mock
 	private PostEntityRepository postEntityRepository;
 	@Mock
 	private UserService userService;
+	@Mock
+	private CommentEntityRepository commentEntityRepository;
 
 	private TestPostEntity testPostEntity;
 
@@ -166,11 +174,51 @@ class PostServiceTest {
 			.hasMessageContaining(ErrorCode.INVALID_AUTHORIZATION.name());
 	}
 
+	@Test
+	@DisplayName("코멘트 저장이 정상 동작한다.")
+	void createComment_valid_ok() {
+		when(postEntityRepository.findById(any())).thenReturn(Optional.of(mock(PostEntity.class)));
+		when(userService.getThatIfMember(any())).thenReturn(mock(Member.class));
+		postService.createComment(testPostEntity.postId(), getCommentCreationRequest(), testPostEntity.getNickname());
+
+		assertThatNoException();
+		verify(commentEntityRepository, times(1)).save(any());
+	}
+
+	@Test
+	@DisplayName("코멘트 저장은 작성된 포스트가 없으면 에러발생 한다.")
+	void createComment_emptyPost_error() {
+		when(postEntityRepository.findById(any())).thenReturn(Optional.empty());
+
+		assertThatThrownBy(
+			() -> postService.createComment(testPostEntity.postId(), getCommentCreationRequest(),
+				testPostEntity.getNickname()))
+			.isInstanceOf(SnsApplicationException.class)
+			.hasMessageContaining(ErrorCode.POST_NOT_FOUND.name());
+	}
+
+	@Test
+	@DisplayName("코멘트 저장은 회원이 아니면 에러 발생한다.")
+	void createComment_notMember_error() {
+		when(postEntityRepository.findById(any())).thenReturn(Optional.of(mock(PostEntity.class)));
+		when(userService.getThatIfMember(any())).thenThrow(new SnsApplicationException(ErrorCode.USER_NOT_FOUNDED));
+
+		assertThatThrownBy(
+			() -> postService.createComment(testPostEntity.postId(), getCommentCreationRequest(),
+				testPostEntity.getNickname()))
+			.isInstanceOf(SnsApplicationException.class)
+			.hasMessageContaining(ErrorCode.USER_NOT_FOUNDED.name());
+	}
+
 	private PostRequest.Creation getPostCreationRequest(PostRequestFactory.Designation designation) {
 		return PostRequestFactory.getPostCreationRequest(TEST_TITLE, TEST_CONTENT, designation);
 	}
 
 	private PostRequest.Modification getModificationRequest() {
 		return new PostRequest.Modification(TEST_TITLE + "수정", TEST_CONTENT + "수정");
+	}
+
+	private CommentRequest.Creation getCommentCreationRequest() {
+		return new CommentRequest.Creation(TEST_COMMENT);
 	}
 }
