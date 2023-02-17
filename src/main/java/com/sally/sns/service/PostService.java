@@ -46,20 +46,31 @@ public class PostService {
 			.map(MyPost::from);
 	}
 
+	@Transactional
 	public MyPost modify(PostRequest.Modification request, Long postId, Long userId) {
 		PostEntity postEntity = getPostEntityOrThrow(postId);
-		if (postEntity.isNotAuthor(userId)) {
-			throw new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION,
-				String.format("PostService : modify [Member: %s]", userId));
-		}
-
+		isAuthorOfThePost(userId, postEntity);
 		postEntity.update(request.getTitle(), request.getContent());
 		return MyPost.from(postEntity);
+	}
+
+	@Transactional
+	public void deleteSoftly(Long postId, Long userId) {
+		PostEntity postEntity = getPostEntityOrThrow(postId);
+		isAuthorOfThePost(userId, postEntity);
+		postEntity.softlyDelete();
 	}
 
 	private PostEntity getPostEntityOrThrow(Long postId) {
 		return postEntityRepository.findWithAuthorById(postId)
 			.orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND,
 				String.format("The Post's ID : %d", postId)));
+	}
+
+	private void isAuthorOfThePost(Long userId, PostEntity postEntity) {
+		if (postEntity.isNotAuthor(userId)) {
+			throw new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION,
+				String.format("PostService [Member: %s]", userId));
+		}
 	}
 }
