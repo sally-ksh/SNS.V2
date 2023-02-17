@@ -1,13 +1,16 @@
 package com.sally.sns.service;
 
+import com.sally.sns.controller.reuqest.CommentRequest;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
+import com.sally.sns.model.Member;
 import com.sally.sns.model.MyPost;
 import com.sally.sns.model.Post;
-import com.sally.sns.model.User;
+import com.sally.sns.model.entity.CommentEntity;
 import com.sally.sns.model.entity.PostEntity;
 import com.sally.sns.model.entity.UserEntity;
+import com.sally.sns.repository.CommentEntityRepository;
 import com.sally.sns.repository.PostEntityRepository;
 
 import org.springframework.data.domain.Page;
@@ -20,16 +23,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class PostService {
-	private final PostEntityRepository postEntityRepository;
 	private final UserService userService;
+	private final PostEntityRepository postEntityRepository;
+	private final CommentEntityRepository commentEntityRepository;
 
 	@Transactional
 	public void create(PostRequest.Creation request, String nickname) {
-		User user = userService.loadUserByUserName(nickname);
+		Member member = userService.getThatIfMember(nickname);
 		PostEntity postEntity = PostEntity.of(
 			request.getTitle(),
 			request.getContent(),
-			UserEntity.from(user.getId()),
+			UserEntity.from(member.getUserId()),
 			request.getPlace().toLocation());
 
 		postEntityRepository.save(postEntity);
@@ -48,7 +52,7 @@ public class PostService {
 
 	@Transactional
 	public MyPost modify(PostRequest.Modification request, Long postId, Long userId) {
-		PostEntity postEntity = getPostEntityOrThrow(postId);
+		PostEntity postEntity = getPostEntityWithUserOrThrow(postId);
 		isAuthorOfThePost(userId, postEntity);
 		postEntity.update(request.getTitle(), request.getContent());
 		return MyPost.from(postEntity);
@@ -56,13 +60,29 @@ public class PostService {
 
 	@Transactional
 	public void deleteSoftly(Long postId, Long userId) {
-		PostEntity postEntity = getPostEntityOrThrow(postId);
+		PostEntity postEntity = getPostEntityWithUserOrThrow(postId);
 		isAuthorOfThePost(userId, postEntity);
 		postEntity.softlyDelete();
 	}
 
-	private PostEntity getPostEntityOrThrow(Long postId) {
+	@Transactional
+	public void createComment(Long postId, CommentRequest.Creation request, String authorName) {
+		PostEntity postEntity = getPostEntityOrThrow(postId);
+		Member member = userService.getThatIfMember(authorName);
+		CommentEntity commentEntity = CommentEntity.of(request.getBody(), UserEntity.from(member.getUserId()),
+			postEntity);
+		
+		commentEntityRepository.save(commentEntity);
+	}
+
+	private PostEntity getPostEntityWithUserOrThrow(Long postId) {
 		return postEntityRepository.findWithAuthorById(postId)
+			.orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND,
+				String.format("The Post's ID : %d", postId)));
+	}
+
+	private PostEntity getPostEntityOrThrow(Long postId) {
+		return postEntityRepository.findById(postId)
 			.orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND,
 				String.format("The Post's ID : %d", postId)));
 	}
