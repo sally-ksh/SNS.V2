@@ -130,6 +130,42 @@ class PostServiceTest {
 			.hasMessageContaining(ErrorCode.INVALID_AUTHORIZATION.name());
 	}
 
+	@Test
+	@DisplayName("포스트 삭제는 정상 동작한다.")
+	void deleteSoftly_valid_ok() {
+		when(postEntityRepository.findWithAuthorById(testPostEntity.postId()))
+			.thenReturn(Optional.of(mock(PostEntity.class)));
+		postService.deleteSoftly(testPostEntity.postId(), testPostEntity.authorId());
+	}
+
+	@Test
+	@DisplayName("포스트 삭제시 조회된 포스트가 없으면 에러 발생한다.")
+	void deleteSoftly_emptyOfPost_error() {
+		when(postEntityRepository.findWithAuthorById(testPostEntity.postId()))
+			.thenReturn(Optional.empty());
+
+		assertThatThrownBy(
+			() -> postService.deleteSoftly(testPostEntity.postId(), testPostEntity.authorId()))
+			.isInstanceOf(SnsApplicationException.class)
+			.hasMessageContaining(ErrorCode.POST_NOT_FOUND.name());
+	}
+
+	@Test
+	@DisplayName("포스트 삭제시 요청자와 작성자 일치하지 않으면 에러 발생한다")
+	void deleteSoftly_invalidNotAuthor_error() {
+		PostEntity postEntity = mock(PostEntity.class);
+		Long expectedNotWriter = testPostEntity.authorId() + 1L;
+
+		when(postEntityRepository.findWithAuthorById(testPostEntity.postId()))
+			.thenReturn(Optional.of(postEntity));
+		when(postEntity.isNotAuthor(expectedNotWriter)).thenReturn(true);
+
+		assertThatThrownBy(
+			() -> postService.deleteSoftly(testPostEntity.postId(), expectedNotWriter))
+			.isInstanceOf(SnsApplicationException.class)
+			.hasMessageContaining(ErrorCode.INVALID_AUTHORIZATION.name());
+	}
+
 	private PostRequest.Creation getPostCreationRequest(PostRequestFactory.Designation designation) {
 		return PostRequestFactory.getPostCreationRequest(TEST_TITLE, TEST_CONTENT, designation);
 	}
