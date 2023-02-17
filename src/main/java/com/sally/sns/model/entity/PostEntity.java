@@ -86,4 +86,8 @@ public class PostEntity extends BaseEntity {
 		this.title = Objects.requireNonNull(title);
 		this.content = content;
 	}
+
+	public void softlyDelete() {
+		toDelete();
+	}
 }
