@@ -56,7 +56,7 @@ class UserServiceTest {
 	void create_saveUser_ok() {
 		when(userEntityRepository.existsUserByNickNameOrEmail(nickName, email)).thenReturn(false);
 		when(passwordEncoder.encode(password)).thenReturn("encodedPassword");
-		when(userEntityRepository.save(any())).thenReturn(testUserEntity.toEntity());
+		when(userEntityRepository.save(any())).thenReturn(testUserEntity.getEntity());
 
 		userService.create(new UserRequest.Join(email, nickName, password));
 
@@ -79,7 +79,7 @@ class UserServiceTest {
 	void login_valid_ok() {
 		String jwtSecretKey = "secretKey-size-more-than-256-bit";
 		long jwtExpiredTime = 30 * 24 * 60 * 60 * 1000L;
-		UserEntity userEntity = testUserEntity.toEntity();
+		UserEntity userEntity = testUserEntity.getEntity();
 
 		when(userCacheRepository.user(nickName)).thenReturn(Optional.empty());
 		when(userEntityRepository.findByNickName(nickName)).thenReturn(Optional.of(userEntity));
