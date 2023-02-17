@@ -4,6 +4,7 @@ import com.sally.sns.configuration.JwtConfiguration;
 import com.sally.sns.controller.reuqest.UserRequest;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
+import com.sally.sns.model.Member;
 import com.sally.sns.model.User;
 import com.sally.sns.model.entity.UserEntity;
 import com.sally.sns.repository.UserCacheRepository;
@@ -64,6 +65,12 @@ public class UserService {
 				ErrorCode.DUPLICATED_USER_NAME,
 				String.format("%s is duplicated", userJoinRequest.getNickname()));
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public Member getThatIfMember(String nickName) {
+		UserEntity userEntity = getUserEntityOrThrow(nickName);
+		return new Member(userEntity.getId(), userEntity.nickName());
 	}
 
 	private UserEntity getUserEntityOrThrow(String nickName) {
