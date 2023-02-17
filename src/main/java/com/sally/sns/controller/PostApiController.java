@@ -3,6 +3,7 @@ package com.sally.sns.controller;
 import com.sally.sns.controller.response.MyPostResponse;
 import com.sally.sns.controller.response.PostResponse;
 import com.sally.sns.controller.response.Response;
+import com.sally.sns.controller.reuqest.CommentRequest;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.model.User;
 import com.sally.sns.service.PostService;
@@ -61,6 +62,13 @@ public class PostApiController {
 	public Response delete(@PathVariable Long postId, Authentication authentication) {
 		User user = (User)authentication.getPrincipal();
 		postService.deleteSoftly(postId, user.getId());
+		return Response.success();
+	}
+
+	@PostMapping("/{postId}/comments")
+	public Response commentAtPost(@PathVariable Long postId, @RequestBody CommentRequest.Creation request,
+		Authentication authentication) {
+		postService.createComment(postId, request, authentication.getName());
 		return Response.success();
 	}
 }
