@@ -90,4 +90,8 @@ public class PostEntity extends BaseEntity {
 	public void softlyDelete() {
 		toDelete();
 	}
+
+	public boolean isSameAs(Long postId) {
+		return getId() == postId;
+	}
 }
