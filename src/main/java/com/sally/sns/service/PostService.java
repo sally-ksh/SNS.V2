@@ -4,6 +4,7 @@ import com.sally.sns.controller.reuqest.CommentRequest;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
+import com.sally.sns.model.Comment;
 import com.sally.sns.model.Member;
 import com.sally.sns.model.MyPost;
 import com.sally.sns.model.Post;
@@ -71,8 +72,32 @@ public class PostService {
 		Member member = userService.getThatIfMember(authorName);
 		CommentEntity commentEntity = CommentEntity.of(request.getBody(), UserEntity.from(member.getUserId()),
 			postEntity);
-		
+
 		commentEntityRepository.save(commentEntity);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<Comment> readComments(Long postId, Pageable pageable) {
+		return commentEntityRepository.findCommentViewsBy(postId, pageable)
+			.map(Comment::from);
+	}
+
+	@Transactional
+	public String modifyComment(Long postId, Long commentId,
+		CommentRequest.Modification request, Long userId) {
+		CommentEntity commentEntity = getCommentEntityOrThrow(commentId);
+		inValidPostOrCommenter(postId, commentId, userId, commentEntity);
+		commentEntity.update(request.getBody());
+
+		return commentEntity.content();
+	}
+
+	@Transactional
+	public void deleteComment(Long postId, Long commentId, Long userId) {
+		CommentEntity commentEntity = getCommentEntityOrThrow(commentId);
+		inValidPostOrCommenter(postId, commentId, userId, commentEntity);
+
+		commentEntity.deleteSoftly();
 	}
 
 	private PostEntity getPostEntityWithUserOrThrow(Long postId) {
@@ -90,7 +115,24 @@ public class PostService {
 	private void isAuthorOfThePost(Long userId, PostEntity postEntity) {
 		if (postEntity.isNotAuthor(userId)) {
 			throw new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION,
-				String.format("PostService [Member: %s]", userId));
+				String.format("PostService [Member: %d]", userId));
 		}
+	}
+
+	private void inValidPostOrCommenter(Long postId, Long commentId, Long userId, CommentEntity commentEntity) {
+		if (commentEntity.hasNotPost(postId)) {
+			throw new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION,
+				String.format("The Comment(id: %d) is existed, but No Post(id: %d).", commentId, postId));
+		}
+		if (commentEntity.isNotCommenter(userId)) {
+			throw new SnsApplicationException(ErrorCode.INVALID_AUTHORIZATION,
+				String.format("PostService - comment [Member: %d]", userId));
+		}
+	}
+
+	private CommentEntity getCommentEntityOrThrow(Long commentId) {
+		return commentEntityRepository.findById(commentId)
+			.orElseThrow(() -> new SnsApplicationException(ErrorCode.COMMENT_NOT_FOUND,
+				String.format("The Comment ID : %d", commentId)));
 	}
 }
