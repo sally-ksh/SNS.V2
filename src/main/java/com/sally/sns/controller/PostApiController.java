@@ -1,5 +1,6 @@
 package com.sally.sns.controller;
 
+import com.sally.sns.controller.response.CommentResponse;
 import com.sally.sns.controller.response.MyPostResponse;
 import com.sally.sns.controller.response.PostResponse;
 import com.sally.sns.controller.response.Response;
@@ -69,6 +70,33 @@ public class PostApiController {
 	public Response commentAtPost(@PathVariable Long postId, @RequestBody CommentRequest.Creation request,
 		Authentication authentication) {
 		postService.createComment(postId, request, authentication.getName());
+		return Response.success();
+	}
+
+	@GetMapping("/{postId}/comments")
+	public Response<Page<CommentResponse.Lists>> getThePostOfComments(
+		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+		@PathVariable Long postId,
+		Authentication authentication) {
+		return Response.success(postService.readComments(postId, pageable).map(CommentResponse.Lists::of));
+	}
+
+	@PutMapping("/{postId}/comments/{commentId}")
+	public Response<CommentResponse.Body> getThePostOfComments(
+		@PathVariable Long postId, @PathVariable Long commentId,
+		@RequestBody CommentRequest.Modification request,
+		Authentication authentication) {
+		User user = (User)authentication.getPrincipal();
+		return Response.success(
+			new CommentResponse.Body(postService.modifyComment(postId, commentId, request, user.getId())));
+	}
+
+	@DeleteMapping("/{postId}/comments/{commentId}")
+	public Response deleteComment(
+		@PathVariable Long postId, @PathVariable Long commentId,
+		Authentication authentication) {
+		User user = (User)authentication.getPrincipal();
+		postService.deleteComment(postId, commentId, user.getId());
 		return Response.success();
 	}
 }
