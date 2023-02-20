@@ -14,7 +14,9 @@ public enum ErrorCode {
 	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "The password is wrong."),
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "The token is invalid."),
 	INVALID_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "The user is unauthorized."),
-	POST_NOT_FOUND(HttpStatus.NOT_FOUND, "The post is not found.");
+	POST_NOT_FOUND(HttpStatus.NOT_FOUND, "The post is not found."),
+	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "The comment in not found."),
+	NO_TEXT(HttpStatus.LENGTH_REQUIRED, "The comment is blank.");
 
 	private HttpStatus httpStatus;
 	private String message;
