@@ -17,6 +17,7 @@ import com.sally.sns.fixture.entity.TestPostEntity;
 import com.sally.sns.fixture.request.PostRequestFactory;
 import com.sally.sns.model.Member;
 import com.sally.sns.model.User;
+import com.sally.sns.model.entity.CommentEntity;
 import com.sally.sns.model.entity.PostEntity;
 import com.sally.sns.repository.CommentEntityRepository;
 import com.sally.sns.repository.PostEntityRepository;
@@ -208,6 +209,57 @@ class PostServiceTest {
 				testPostEntity.getNickname()))
 			.isInstanceOf(SnsApplicationException.class)
 			.hasMessageContaining(ErrorCode.USER_NOT_FOUNDED.name());
+	}
+
+	@Test
+	@DisplayName("코멘트 목록 조회는 정상 동작한다.")
+	void readComments_valid_ok() {
+		Pageable pageable = mock(Pageable.class);
+		when(commentEntityRepository.findCommentViewsBy(any(), any())).thenReturn(Page.empty());
+
+		postService.readComments(testPostEntity.postId(), pageable);
+
+		assertThatNoException();
+	}
+
+	@Test
+	@DisplayName("코멘트 수정은 정상 동작한다.")
+	void modifyComment_valid_ok() {
+		when(commentEntityRepository.findById(any())).thenReturn(Optional.of(mock(CommentEntity.class)));
+
+		postService.modifyComment(testPostEntity.postId(), 1L, new CommentRequest.Modification("댓글 수정"),
+			testPostEntity.authorId());
+
+		assertThatNoException();
+	}
+
+	@Test
+	@DisplayName("코멘트 수정은 작성된 포스트 없으면 에러 처리한다.")
+	void modifyComment_notFountPost_error() {
+		CommentEntity commentEntity = mock(CommentEntity.class);
+		when(commentEntityRepository.findById(any())).thenReturn(Optional.of(commentEntity));
+		when(commentEntity.hasNotPost(any())).thenReturn(true);
+
+		assertThatThrownBy(
+			() -> postService.modifyComment(testPostEntity.postId(), 1L, new CommentRequest.Modification("댓글 수정"),
+				testPostEntity.authorId()))
+			.isInstanceOf(SnsApplicationException.class)
+			.hasMessageContaining(ErrorCode.INVALID_AUTHORIZATION.name());
+	}
+
+	@Test
+	@DisplayName("코멘트 수정은 수정 요청자가 댓글 작성자가 아니면 에러 처리한다.")
+	void modifyComment_differentCommentAuthor_error() {
+		CommentEntity commentEntity = mock(CommentEntity.class);
+		when(commentEntityRepository.findById(any())).thenReturn(Optional.of(commentEntity));
+		when(commentEntity.isNotCommenter(any())).thenReturn(true);
+
+		assertThatThrownBy(
+			() -> postService.modifyComment(testPostEntity.postId(), 1L,
+				new CommentRequest.Modification("댓글 수정"),
+				testPostEntity.authorId()))
+			.isInstanceOf(SnsApplicationException.class)
+			.hasMessageContaining(ErrorCode.INVALID_AUTHORIZATION.name());
 	}
 
 	private PostRequest.Creation getPostCreationRequest(PostRequestFactory.Designation designation) {
