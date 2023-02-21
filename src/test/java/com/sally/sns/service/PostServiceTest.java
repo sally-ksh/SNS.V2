@@ -16,7 +16,6 @@ import com.sally.sns.exception.SnsApplicationException;
 import com.sally.sns.fixture.entity.TestPostEntity;
 import com.sally.sns.fixture.request.PostRequestFactory;
 import com.sally.sns.model.Member;
-import com.sally.sns.model.User;
 import com.sally.sns.model.entity.CommentEntity;
 import com.sally.sns.model.entity.PostEntity;
 import com.sally.sns.repository.CommentEntityRepository;
@@ -60,7 +59,7 @@ class PostServiceTest {
 	@DisplayName("포스트 등록은 정상 동작 한다.")
 	void post_createWithoutLocation_ok() {
 		PostRequest.Creation postCreationRequest = getPostCreationRequest(PostRequestFactory.Designation.NOT_EMPTY);
-		when(userService.loadUserByUserName(TEST_USER_NICKNAME)).thenReturn(mock(User.class));
+		when(userService.getThatIfMember(TEST_USER_NICKNAME)).thenReturn(mock(Member.class));
 
 		postService.create(postCreationRequest, TEST_USER_NICKNAME);
 	}
@@ -69,7 +68,7 @@ class PostServiceTest {
 	@DisplayName("포스트 등록은 가입된 회원이 아니면 에러발생 한다.")
 	void post_createInvalidUser_error() {
 		doThrow(new SnsApplicationException(ErrorCode.USER_NOT_FOUNDED))
-			.when(userService).loadUserByUserName(TEST_USER_NICKNAME);
+			.when(userService).getThatIfMember(TEST_USER_NICKNAME);
 
 		assertThatThrownBy(
 			() -> postService.create(getPostCreationRequest(PostRequestFactory.Designation.EMPTY), TEST_USER_NICKNAME))
