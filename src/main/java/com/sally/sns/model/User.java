@@ -1,24 +1,18 @@
 package com.sally.sns.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sally.sns.filter.AuthenticationUser;
 import com.sally.sns.model.entity.UserEntity;
 
-import org.springframework.security.core.AuthenticatedPrincipal;
-
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class User implements AuthenticatedPrincipal {
+public class User implements AuthenticationUser {
 	private Long id;
-	private String nickName;
+	private String nickname;
 	private String role;
 
 	public static User fromEntity(UserEntity entity) {
@@ -26,8 +20,17 @@ public class User implements AuthenticatedPrincipal {
 	}
 
 	@Override
-	@JsonIgnore // exclude security property of redis
-	public String getName() {
-		return nickName;
+	public Long getId() {
+		return this.id;
+	}
+
+	@Override
+	public String getNickname() {
+		return this.nickname;
+	}
+
+	@Override
+	public String getRole() {
+		return this.role;
 	}
 }
