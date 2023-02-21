@@ -50,7 +50,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				filterChain.doFilter(request, response);
 				return;
 			}
-			
+
 			User user = getValidUserFrom(token);
 			toSecurityContext(request, user);
 		} catch (RuntimeException exception) {
@@ -67,8 +67,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	}
 
 	private void toSecurityContext(HttpServletRequest request, User user) {
+		SecurityUser securityUser = new SecurityUser(user);
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-			user, null, List.of(new SimpleGrantedAuthority(user.getRole()))
+			securityUser, null, List.of(new SimpleGrantedAuthority(securityUser.getRole()))
 		);
 		authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(authenticationToken);
