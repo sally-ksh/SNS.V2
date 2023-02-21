@@ -20,7 +20,7 @@ public class UserCacheRepository {
 	private final RedisTemplate<String, User> userRedisTemplate;  // 싱글 스레드
 
 	public void save(User user) {
-		String key = getKey(user.getNickName());
+		String key = getKey(user.getNickname());
 		log.info("store a user in a cache [{}:{}]", key, user);
 		userRedisTemplate.opsForValue().set(key, user, USER_CACHE_TTL);
 	}
