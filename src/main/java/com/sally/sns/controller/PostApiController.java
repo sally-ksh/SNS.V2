@@ -6,8 +6,10 @@ import com.sally.sns.controller.response.PostResponse;
 import com.sally.sns.controller.response.Response;
 import com.sally.sns.controller.reuqest.CommentRequest;
 import com.sally.sns.controller.reuqest.PostRequest;
-import com.sally.sns.model.User;
+import com.sally.sns.filter.AuthenticationUser;
+import com.sally.sns.filter.SecurityUser;
 import com.sally.sns.service.PostService;
+import com.sally.sns.util.TypeCastingUtils;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,20 +50,20 @@ public class PostApiController {
 	public Response<Page<MyPostResponse>> getMyList(
 		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		Authentication authentication) {
-		User user = (User)authentication.getPrincipal();
+		AuthenticationUser user = toAuthenticationUser(authentication);
 		return Response.success(postService.readMemberPosts(pageable, user.getId()).map(MyPostResponse::of));
 	}
 
 	@PutMapping("/{postId}")
 	public Response<MyPostResponse> modify(@PathVariable Long postId,
 		@RequestBody PostRequest.Modification request, Authentication authentication) {
-		User user = (User)authentication.getPrincipal();
+		AuthenticationUser user = toAuthenticationUser(authentication);
 		return Response.success(MyPostResponse.of(postService.modify(request, postId, user.getId())));
 	}
 
 	@DeleteMapping("/{postId}")
 	public Response delete(@PathVariable Long postId, Authentication authentication) {
-		User user = (User)authentication.getPrincipal();
+		AuthenticationUser user = toAuthenticationUser(authentication);
 		postService.deleteSoftly(postId, user.getId());
 		return Response.success();
 	}
@@ -86,7 +88,7 @@ public class PostApiController {
 		@PathVariable Long postId, @PathVariable Long commentId,
 		@RequestBody CommentRequest.Modification request,
 		Authentication authentication) {
-		User user = (User)authentication.getPrincipal();
+		AuthenticationUser user = toAuthenticationUser(authentication);
 		return Response.success(
 			new CommentResponse.Body(postService.modifyComment(postId, commentId, request, user.getId())));
 	}
@@ -95,8 +97,14 @@ public class PostApiController {
 	public Response deleteComment(
 		@PathVariable Long postId, @PathVariable Long commentId,
 		Authentication authentication) {
-		User user = (User)authentication.getPrincipal();
+		AuthenticationUser user = toAuthenticationUser(authentication);
 		postService.deleteComment(postId, commentId, user.getId());
 		return Response.success();
 	}
+
+	private AuthenticationUser toAuthenticationUser(Authentication authentication) {
+		return TypeCastingUtils.fromAndSecTo(authentication.getPrincipal(), SecurityUser.class,
+			AuthenticationUser.class);
+	}
+
 }
