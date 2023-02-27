@@ -47,6 +47,8 @@ class PostServiceTest {
 	private UserService userService;
 	@Mock
 	private CommentEntityRepository commentEntityRepository;
+	@Mock
+	private AlarmService alarmService;
 
 	private TestPostEntity testPostEntity;
 
@@ -183,6 +185,7 @@ class PostServiceTest {
 
 		assertThatNoException();
 		verify(commentEntityRepository, times(1)).save(any());
+		verify(alarmService, times(1)).storeCommentAlarm(any(), any());
 	}
 
 	@Test

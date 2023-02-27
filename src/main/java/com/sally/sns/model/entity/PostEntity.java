@@ -94,4 +94,8 @@ public class PostEntity extends BaseEntity {
 	public boolean isSameAs(Long postId) {
 		return getId() == postId;
 	}
+
+	public Long authorId() {
+		return this.author.getId();
+	}
 }
