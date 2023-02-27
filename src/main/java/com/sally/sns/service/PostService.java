@@ -4,6 +4,7 @@ import com.sally.sns.controller.reuqest.CommentRequest;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
+import com.sally.sns.model.AlarmKeywordArgument;
 import com.sally.sns.model.Comment;
 import com.sally.sns.model.Member;
 import com.sally.sns.model.MyPost;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class PostService {
 	private final UserService userService;
+	private final AlarmService alarmService;
 	private final PostEntityRepository postEntityRepository;
 	private final CommentEntityRepository commentEntityRepository;
 
@@ -74,6 +76,9 @@ public class PostService {
 			postEntity);
 
 		commentEntityRepository.save(commentEntity);
+		AlarmKeywordArgument alarmKeywordArgument = AlarmKeywordArgument.addAlarmForComment(
+			postEntity.authorId(), member.getUserId(), postEntity.getId(), commentEntity.getId());
+		alarmService.storeCommentAlarm(member, alarmKeywordArgument);
 	}
 
 	@Transactional(readOnly = true)
