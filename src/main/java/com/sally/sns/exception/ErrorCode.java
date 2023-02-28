@@ -16,7 +16,8 @@ public enum ErrorCode {
 	INVALID_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "The user is unauthorized."),
 	POST_NOT_FOUND(HttpStatus.NOT_FOUND, "The post is not found."),
 	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "The comment in not found."),
-	NO_TEXT(HttpStatus.LENGTH_REQUIRED, "The comment is blank.");
+	NO_TEXT(HttpStatus.LENGTH_REQUIRED, "The comment is blank."),
+	ALARM_ERROR(HttpStatus.NOT_FOUND, "Error of sending the Alarm.");
 
 	private HttpStatus httpStatus;
 	private String message;
