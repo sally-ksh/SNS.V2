@@ -21,9 +21,7 @@ import javax.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@ToString
 @NoArgsConstructor(access = PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = true)
 @Where(clause = "deleted = false")

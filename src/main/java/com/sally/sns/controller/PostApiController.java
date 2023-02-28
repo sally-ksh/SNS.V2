@@ -106,5 +106,4 @@ public class PostApiController {
 		return TypeCastingUtils.fromAndSecTo(authentication.getPrincipal(), SecurityUser.class,
 			AuthenticationUser.class);
 	}
-
 }
