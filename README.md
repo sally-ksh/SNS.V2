@@ -25,9 +25,18 @@
 
 ---
 
+## 목차
+
+1. [로그인 캐싱 도입 시퀀드 다이어그램](###시퀀스-다이어그램)
+2. [알람 서비스](##알람-서비스)
+    - [Long-Polling 구현](###롱-폴링-방식)
+
+---
+
 ### 시퀀스 다이어그램
 
-- SNS V1에서의 JWT 토큰 만료기간 30일 내 로그인 사용자 DB 접근 비용 감소 위해 캐싱 추가
+- SNS V1에서의 JWT 토큰 만료기간 30일 내 로그인 사용자 DB 접근 비용 감소 위해 캐싱
+  추가 [👉 블러그 정리글 보러가기](https://velog.io/@sally_devv/JWT-%ED%86%A0%ED%81%B0%EB%A7%8C-%EC%9D%B4%EC%9A%A9%ED%95%B4%EB%B3%B4%EB%A0%A4-%ED%95%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8)
 
 ![SNS V2 Redis - login](https://user-images.githubusercontent.com/96989782/217999145-44583dee-65be-4bdd-82e6-966fc2e6174e.png)
 
@@ -69,6 +78,18 @@ GET `http://localhost:8080/api/v2/sns/addresses?address=전북 삼성동 100`
     }
 }
 ```
+
+---
+
+## 알람 서비스
+
+### 롱 폴링 방식
+
+- [👉 Long-Polling 방식 구현 정리글 보러가기](https://velog.io/@sally_devv/%EC%95%8C%EB%9E%8C-%EC%84%9C%EB%B9%84%EC%8A%A4-LongPolling%EC%9C%BC%EB%A1%9C-%EA%B5%AC%ED%98%84%ED%95%98%EB%A9%B0)
+
+### SSE
+
+### Redis
 
 <br>
 <br>
