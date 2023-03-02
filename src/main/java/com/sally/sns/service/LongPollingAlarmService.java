@@ -32,7 +32,7 @@ public class LongPollingAlarmService implements AlarmService {
 	@Scheduled(fixedRate = 1000)
 	@Transactional
 	@Override
-	public void getAlarms() {
+	public void send() {
 		AlarmSession session = alarmInMemory.isPeek();
 		if (alarmInMemory.hasSession()) {
 			List<AlarmEntity> alarmEntities = alarmEntityRepository.findAllByRecipientId(session.recipientId());
