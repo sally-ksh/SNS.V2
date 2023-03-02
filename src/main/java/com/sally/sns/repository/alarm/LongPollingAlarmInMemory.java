@@ -11,7 +11,6 @@ public class LongPollingAlarmInMemory {
 	private static LinkedBlockingDeque<AlarmSession> queue = new LinkedBlockingDeque(10);
 
 	public void add(AlarmSession session) {
-		System.out.println("LongPollingAlarmInMemory.add");
 		queue.addLast(session);
 	}
 
