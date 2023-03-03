@@ -2,8 +2,8 @@ package com.sally.sns.model.entity;
 
 import static lombok.AccessLevel.PRIVATE;
 
-import com.sally.sns.model.AlarmKeywordArgument;
-import com.sally.sns.model.AlarmType;
+import com.sally.sns.model.alarm.AlarmKeywordArgument;
+import com.sally.sns.model.alarm.AlarmType;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 
 import org.hibernate.annotations.Type;

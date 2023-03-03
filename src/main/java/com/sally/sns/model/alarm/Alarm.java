@@ -1,4 +1,4 @@
-package com.sally.sns.model;
+package com.sally.sns.model.alarm;
 
 import com.sally.sns.model.entity.AlarmEntity;
 
