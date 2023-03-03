@@ -1,18 +1,22 @@
 package com.sally.sns.controller;
 
-import com.sally.sns.controller.response.Response;
-import com.sally.sns.exception.ErrorCode;
-import com.sally.sns.model.Alarm;
-import com.sally.sns.model.AlarmSession;
-import com.sally.sns.model.Member;
-import com.sally.sns.repository.alarm.LongPollingAlarmInMemory;
-import com.sally.sns.service.UserService;
+import static com.sally.sns.service.alarm.LongPollingAlarmService.LONG_POLLING_TIMEOUT;
 
+import com.sally.sns.controller.response.Response;
+import com.sally.sns.filter.AuthenticationUser;
+import com.sally.sns.filter.SecurityUser;
+import com.sally.sns.model.Member;
+import com.sally.sns.model.alarm.Alarm;
+import com.sally.sns.model.alarm.LongPollingSession;
+import com.sally.sns.service.alarm.AlarmService;
+import com.sally.sns.util.TypeCastingUtils;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -27,29 +31,29 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class AlarmApiController {
 	private static final ExecutorService executorService = Executors.newFixedThreadPool(5);
-	private final LongPollingAlarmInMemory alarmInMemory;
-	public final static Long LONG_POLLING_TIMEOUT = 5000L;  // 5000L
-	private final UserService userService;
+	private final AlarmService alarmService;
 
-	@GetMapping("/long-polling/{nickname}")
-	public DeferredResult<Response<List<Alarm>>> publisher(
-		@PathVariable String nickname) {
+	@GetMapping("/long-polling")
+	public DeferredResult<?> publisher(Authentication authentication) {
 		DeferredResult<Response<List<Alarm>>> output = new DeferredResult<>(LONG_POLLING_TIMEOUT);
-
 		executorService.execute(() -> {
-			try {
-				Member member = userService.getThatIfMember(nickname);
-				alarmInMemory.add(AlarmSession.of(member, output));
-				output.onCompletion(() -> log.info("The alarm publish is completed."));
-			} catch (Exception exception) {
-				output.setErrorResult(Response.error(ErrorCode.ALARM_ERROR.name()));
-				alarmInMemory.remove();
-			}
-		});
-		output.onTimeout(() -> {
-			output.setErrorResult(String.format("TimeOut: %dms", LONG_POLLING_TIMEOUT));
-			alarmInMemory.remove();
+			final Member recipient = toMember(authentication);
+			alarmService.connect(LongPollingSession.of(recipient, output));
 		});
 		return output;
+	}
+
+	@GetMapping("/sse/subscribe")
+	public SseEmitter subscribe(Authentication authentication) {
+		// final Member recipient = toMember(authentication);
+		// return alarmService.connect(SseSession.of(recipient));
+	}
+
+	private Member toMember(Authentication authentication) {
+		AuthenticationUser user = TypeCastingUtils.fromAndSecTo(
+			authentication.getPrincipal(),
+			SecurityUser.class,
+			AuthenticationUser.class);
+		return new Member(user.getId(), user.getNickname());
 	}
 }
