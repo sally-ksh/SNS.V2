@@ -43,9 +43,11 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        generate_statistics: true
         format_sql: true
         highlight_sql: true
     open-in-view: false
+
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
@@ -59,4 +61,4 @@ logging:
       hibernate:
         type:
           descriptor:
-            sql: TRACE
+            sql: info
