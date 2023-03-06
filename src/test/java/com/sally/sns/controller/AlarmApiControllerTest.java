@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockAsyncContext;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,13 +28,13 @@ class AlarmApiControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-	@WithMockUser
+	@WithAnonymousUser
 	@Test
 	@DisplayName("알람 조회 요청시 회원이 아니면 알람 에러 응답코드를 확인한다.")
 	void publisher_notMember_errorCode() throws Exception {
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v2/sns/alarms/long-polling/testnoone").with(csrf()))
-			.andExpect(status().isNotFound());
+				MockMvcRequestBuilders.get("/api/v2/sns/alarms/long-polling").with(csrf()))
+			.andExpect(status().isUnauthorized());
 	}
 
 	@WithMockUser
@@ -41,7 +42,7 @@ class AlarmApiControllerTest {
 	@DisplayName("알람 조회 요청시 알람이 없는 경우 타임아웃 응답을 확인한다.")
 	void publisher_emptyMemberAlarms_timeout() throws Exception {
 		MvcResult asyncListener = mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v2/sns/alarms/long-polling/tester").with(csrf()))
+				MockMvcRequestBuilders.get("/api/v2/sns/alarms/long-polling").with(csrf()))
 			.andExpect(request().asyncStarted())
 			.andReturn();
 
