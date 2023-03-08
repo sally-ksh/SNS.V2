@@ -22,23 +22,24 @@ public class LongPollingSession implements AlarmSession {
 		return new LongPollingSession(recipient, deferredResult);
 	}
 
+	public boolean send(List<Alarm> alarms) {
+		return this.deferredResult.setResult(Response.success(alarms));
+	}
+
+	public boolean sendError(Response response) {
+		return this.deferredResult.setErrorResult(response);
+	}
+
+	public void isCompleted(Runnable callback) {
+		this.deferredResult.onCompletion(callback);
+	}
+
 	@Override
 	public Long recipientId() {
 		return this.recipient.getUserId();
 	}
 
-	@Override
-	public void send(List<Alarm> alarms) {
-		this.deferredResult.setResult(Response.success(alarms));
-	}
-
-	@Override
 	public boolean isExpiredOrNoResult() {
 		return this.deferredResult.isSetOrExpired();
-	}
-
-	@Override
-	public DeferredResult<Response<List<Alarm>>> getSender() {
-		return this.deferredResult;
 	}
 }
