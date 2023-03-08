@@ -17,12 +17,21 @@ public class Alarm {
 	private final AlarmKeywordArgument argument;
 	private final LocalDateTime createdAt;
 
-	public static Alarm from(AlarmEntity alarmEntity) {
+	public static Alarm from(AlarmView alarmView) {
 		return Alarm.builder()
-			.recipientId(alarmEntity.recipientId())
-			.message(alarmEntity.typeText())
-			.argument(alarmEntity.keywordArgument())
-			.createdAt(alarmEntity.getCreatedAt())
+			.recipientId(alarmView.getRecipientId())
+			.message(alarmView.typeText())
+			.argument(alarmView.getKeywordArgument())
+			.createdAt(alarmView.getCreatedAt())
+			.build();
+	}
+
+	public static Alarm from(AlarmEntity entity) {
+		return Alarm.builder()
+			.recipientId(entity.recipientId())
+			.message(entity.typeText())
+			.argument(entity.keywordArgument())
+			.createdAt(entity.getCreatedAt())
 			.build();
 	}
 }

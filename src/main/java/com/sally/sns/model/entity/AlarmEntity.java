@@ -68,10 +68,6 @@ public class AlarmEntity extends BaseEntity {
 	public AlarmKeywordArgument keywordArgument() {
 		return this.keywordArgument;
 	}
-
-	public void softlyDelete() {
-		toDelete();
-	}
 }
 /**
  * 누가 -의 -에 -을 달았다. (sender -> recipient)

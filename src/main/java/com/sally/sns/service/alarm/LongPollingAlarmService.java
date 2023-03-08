@@ -83,6 +83,7 @@ public class LongPollingAlarmService implements AlarmService<DeferredResult<Resp
 			keywordArgument));
 	}
 
+	@Override
 	public void sendAndRemove(boolean isSend) {
 		if (isSend) {
 			alarmInMemory.remove();
