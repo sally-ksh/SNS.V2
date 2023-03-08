@@ -4,16 +4,17 @@ import com.sally.sns.controller.reuqest.CommentRequest;
 import com.sally.sns.controller.reuqest.PostRequest;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.exception.SnsApplicationException;
-import com.sally.sns.model.AlarmKeywordArgument;
 import com.sally.sns.model.Comment;
 import com.sally.sns.model.Member;
 import com.sally.sns.model.MyPost;
 import com.sally.sns.model.Post;
+import com.sally.sns.model.alarm.AlarmKeywordArgument;
 import com.sally.sns.model.entity.CommentEntity;
 import com.sally.sns.model.entity.PostEntity;
 import com.sally.sns.model.entity.UserEntity;
 import com.sally.sns.repository.CommentEntityRepository;
 import com.sally.sns.repository.PostEntityRepository;
+import com.sally.sns.service.alarm.AlarmService;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,7 +79,7 @@ public class PostService {
 		commentEntityRepository.save(commentEntity);
 		AlarmKeywordArgument alarmKeywordArgument = AlarmKeywordArgument.addAlarmForComment(
 			postEntity.authorId(), member.getUserId(), postEntity.getId(), commentEntity.getId());
-		alarmService.storeCommentAlarm(member, alarmKeywordArgument);
+		alarmService.storeCommentAlarm(alarmKeywordArgument);
 	}
 
 	@Transactional(readOnly = true)
