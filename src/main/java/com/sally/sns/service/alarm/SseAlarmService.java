@@ -12,17 +12,15 @@ import com.sally.sns.model.entity.UserEntity;
 import com.sally.sns.repository.alarm.AlarmEntityRepository;
 import com.sally.sns.repository.alarm.SseAlarmLocalInMemory;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Primary
+// @Primary
 @RequiredArgsConstructor
-@Service
+// @Service  // TODO
 public class SseAlarmService implements AlarmService<SseEmitter> {
 	public final static long SSE_TIMEOUT = 10L * 1000;
 	private final AlarmEntityRepository alarmEntityRepository;
