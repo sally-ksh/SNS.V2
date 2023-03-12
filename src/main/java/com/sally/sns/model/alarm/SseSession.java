@@ -27,6 +27,10 @@ public class SseSession implements AlarmSession {
 		return this.userId;
 	}
 
+	public String recipient() {
+		return String.valueOf(this.userId);
+	}
+
 	public void checkEmitter(Runnable runnable) {
 		this.sseEmitter.onCompletion(runnable);
 		this.sseEmitter.onTimeout(runnable);
