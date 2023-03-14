@@ -1,7 +1,6 @@
 package com.sally.sns.service.alarm;
 
 import com.sally.sns.controller.response.AlarmResponse;
-import com.sally.sns.controller.response.Response;
 import com.sally.sns.exception.ErrorCode;
 import com.sally.sns.model.alarm.Alarm;
 import com.sally.sns.model.alarm.AlarmKeywordArgument;
@@ -15,10 +14,9 @@ import com.sally.sns.repository.alarm.AlarmEntityRepository;
 import com.sally.sns.repository.alarm.LongPollingAlarmInMemory;
 
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @EnableScheduling
 @RequiredArgsConstructor
-@Service
-public class LongPollingAlarmService implements AlarmService<DeferredResult<Response<List<Alarm>>>> {
+@LongPollingService
+@Component
+public class LongPollingAlarmService implements AlarmService {
 	public static final long LONG_POLLING_TIMEOUT = 5000L;
 	public static final String ERROR_LOG_OF_LONG_POLLING = "LongPollingAlarmService: {}";
 	private final AlarmEntityRepository alarmEntityRepository;
@@ -42,7 +41,6 @@ public class LongPollingAlarmService implements AlarmService<DeferredResult<Resp
 			if (alarmInMemory.hasSession()) {
 				List<AlarmView> alarmEntities = alarmEntityRepository.getAlarmsByRecipientId(session.recipientId());
 				if (alarmEntities.size() > 0) {
-					// updateForAlarmSendingStatus(alarmEntities);
 					updateForAlarmSendingStatus(session.recipientId());
 					List<Alarm> alarms = alarmEntities.stream()
 						.map(Alarm::from)
