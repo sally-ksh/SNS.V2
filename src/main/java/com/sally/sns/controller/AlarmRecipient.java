@@ -8,7 +8,7 @@ import com.sally.sns.util.TypeCastingUtils;
 import org.springframework.security.core.Authentication;
 
 public abstract class AlarmRecipient {
-	protected AuthenticationUser toAuthenticationUser(Authentication authentication) {
+	private AuthenticationUser toAuthenticationUser(Authentication authentication) {
 		return TypeCastingUtils.fromAndSecTo(
 			authentication.getPrincipal(),
 			SecurityUser.class,
