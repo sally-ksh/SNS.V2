@@ -83,6 +83,8 @@ GET `http://localhost:8080/api/v2/sns/addresses?address=전북 삼성동 100`
 
 ## 알람 서비스
 
+![](../../../Downloads/SNS2-alarm.drawio.png)
+
 ### 롱 폴링 방식
 
 - [👉 Long-Polling 방식 구현 정리글 보러가기](https://velog.io/@sally_devv/%EC%95%8C%EB%9E%8C-%EC%84%9C%EB%B9%84%EC%8A%A4-LongPolling%EC%9C%BC%EB%A1%9C-%EA%B5%AC%ED%98%84%ED%95%98%EB%A9%B0)
@@ -92,9 +94,6 @@ GET `http://localhost:8080/api/v2/sns/addresses?address=전북 삼성동 100`
 - [👉 알람 서비스와 SSE 블로그](https://velog.io/@sally_devv/%EC%95%8C%EB%9E%8C-%EC%84%9C%EB%B9%84%EC%8A%A4%EC%99%80-SSE)
 
 ### Redis
-
-![](../../../Downloads/SNS2-alarm.drawio.png)
-
 
 <br>
 <br>
