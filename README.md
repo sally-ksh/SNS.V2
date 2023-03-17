@@ -83,7 +83,7 @@ GET `http://localhost:8080/api/v2/sns/addresses?address=전북 삼성동 100`
 
 ## 알람 서비스
 
-![Alarm-UML](https://user-images.githubusercontent.com/96989782/225797609-715e1c8a-f4cc-4cc9-84dc-592c4819b54e.png)
+![Alarm-UML](https://user-images.githubusercontent.com/96989782/225799166-2e7b3aec-d783-4f72-8eb7-663d16ea7a51.png)
 
 ### 롱 폴링 방식
 
